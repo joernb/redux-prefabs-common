@@ -9,26 +9,26 @@ export const entity = <
   DeleteAction extends FSA<Entity> = FSA<Entity>
 >(
   {
-    update,
-    remove,
+    updateType,
+    removeType,
     defaultValue = null
-  } : {
-    update: UpdateAction["type"];
-    remove?: DeleteAction["type"];
+  }: {
+    updateType: UpdateAction["type"];
+    removeType?: DeleteAction["type"];
     defaultValue?: Entity | null;
   }
 ): Reducer<EntityState<Entity>> => (
   state: EntityState<Entity> = defaultValue,
   action: UpdateAction | DeleteAction
 ) => {
-  if(!isError(action)) {
-    if(action.type === update) {
-      return action.payload !== undefined ? action.payload : null;
+    if (!isError(action)) {
+      if (action.type === updateType) {
+        return action.payload !== undefined ? action.payload : null;
+      }
+      if (removeType && action.type === removeType) {
+        return null;
+      }
     }
-    if(remove && action.type === remove) {
-      return null;
-    }
-  }
 
-  return state;
-};
+    return state;
+  };

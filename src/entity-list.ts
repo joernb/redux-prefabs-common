@@ -12,17 +12,17 @@ export const entityList = <
 >(
   {
     id,
-    create,
-    update,
-    remove,
-    updateAll,
+    updateAllType,
+    createType,
+    updateType,
+    removeType,
     defaultValue = []
   } : {
     id: (entity: Entity) => any;
-    updateAll: UpdateAllAction["type"];
-    create?: CreateAction["type"];
-    update?: UpdateAction["type"];
-    remove?: RemoveAction["type"];
+    updateAllType: UpdateAllAction["type"];
+    createType?: CreateAction["type"];
+    updateType?: UpdateAction["type"];
+    removeType?: RemoveAction["type"];
     defaultValue?: Entity[];
   }
 ): Reducer<EntityListState<Entity>> => (
@@ -32,19 +32,19 @@ export const entityList = <
   if(isError(action)) {
     return state;
   }
-  if (updateAll && action.type === updateAll) {
+  if (updateAllType && action.type === updateAllType) {
     const updateAllAction = action as UpdateAllAction;
     if (updateAllAction.payload !== undefined) {
       return updateAllAction.payload;
     }
   }
-  if (create && action.type === create) {
+  if (createType && action.type === createType) {
     const createAction = action as CreateAction;
     if(createAction.payload !== undefined) {
       return state.concat([createAction.payload]);
     }
   }
-  if (update && action.type === update) {
+  if (updateType && action.type === updateType) {
     const updateAction = action as UpdateAction;
     if(updateAction.payload !== undefined) {
       const updatedItem = updateAction.payload;
@@ -54,7 +54,7 @@ export const entityList = <
       );
     }
   }
-  if (remove && action.type === remove) {
+  if (removeType && action.type === removeType) {
     const removeAction = action as RemoveAction;
     if (removeAction.payload !== undefined) {
       const removedItem = removeAction.payload;
