@@ -11,13 +11,17 @@ export const map = <
   {
     inputType,
     outputType,
-    filter,
-    mapper,
+    map,
+    mapMany,
+    flatMap,
+    flatMapMany,
   }: {
     inputType: InputAction["type"];
     outputType: OutputAction["type"];
-    filter?: (payload: InputAction["payload"]) => boolean;
-    mapper: (payload: InputAction["payload"]) => OutputAction["payload"];
+    map?: (payload: InputAction["payload"]) => OutputAction["payload"];
+    mapMany?: (payload: InputAction["payload"]) => Array<OutputAction["payload"]>;
+    flatMap?: (payload: InputAction["payload"]) => OutputAction;
+    flatMapMany?: (payload: InputAction["payload"]) => Array<OutputAction>;
   }
 ): Middleware =>
   api => next => (action: InputAction) => {
@@ -25,13 +29,27 @@ export const map = <
 
     if(action.type === inputType && !action.error) {
       try {
-        const filterResult = filter ? filter(action.payload) : true;
-        if (filterResult === true) {
-          const mapped = mapper(filterResult);
+        if(map) {
           api.dispatch({
             type: outputType,
-            payload: mapped
+            payload: map(action.payload)
           });
+        }
+        if(mapMany) {
+          mapMany(action.payload).map(payload =>
+            api.dispatch({
+              type: outputType,
+              payload
+            })
+          );
+        }
+        if(flatMap) {
+          api.dispatch(flatMap(action.payload));
+        }
+        if(flatMapMany) {
+          flatMapMany(action.payload).map(outputAction =>
+            api.dispatch(outputAction)
+          );
         }
       } catch(error) {
         api.dispatch({
