@@ -5,3 +5,4 @@ export * from "./map";
 export * from "./isolate";
 export * from "./error-handling";
 export * from "./init";
+export * from "./cache";
