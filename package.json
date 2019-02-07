@@ -1,7 +1,7 @@
 {
   "name": "redux-prefabs-common",
   "private": false,
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Redux-based prefabs for general purposes",
   "keywords": [
     "prefabs",
