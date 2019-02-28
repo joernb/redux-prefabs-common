@@ -19,7 +19,7 @@ export const entityList = <
     defaultValue = []
   } : {
     id: (entity: Entity) => any;
-    updateAllType: UpdateAllAction["type"];
+    updateAllType?: UpdateAllAction["type"];
     createType?: CreateAction["type"];
     updateType?: UpdateAction["type"];
     removeType?: RemoveAction["type"];
@@ -35,12 +35,14 @@ export const entityList = <
   if (updateAllType && action.type === updateAllType) {
     const updateAllAction = action as UpdateAllAction;
     if (updateAllAction.payload !== undefined) {
+      // completely replace list
       return updateAllAction.payload;
     }
   }
   if (createType && action.type === createType) {
     const createAction = action as CreateAction;
     if(createAction.payload !== undefined) {
+      // append newly created item to list
       return state.concat([createAction.payload]);
     }
   }
@@ -49,6 +51,7 @@ export const entityList = <
     if(updateAction.payload !== undefined) {
       const updatedItem = updateAction.payload;
       const updatedItemId = id(updatedItem);
+      // update item in list
       return state.map(item =>
         id(item) === updatedItemId ? updatedItem : item
       );
@@ -59,6 +62,7 @@ export const entityList = <
     if (removeAction.payload !== undefined) {
       const removedItem = removeAction.payload;
       const removedItemId = id(removedItem);
+      // filter out removed item
       return state.filter(item =>
         id(item) !== removedItemId
       );
