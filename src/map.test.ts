@@ -1,6 +1,6 @@
 import { AnyAction, Dispatch, Middleware, MiddlewareAPI } from "redux";
 import { FSA } from "flux-standard-action";
-import { map } from "./map";
+import { map, mapMany, flatMap, flatMapMany } from "./map";
 
 interface FooAction extends FSA<string> {
   type: "Foo";
@@ -48,12 +48,25 @@ describe("map", () => {
     expect(api.dispatch).toHaveBeenCalledTimes(1);
     expect(api.dispatch).toHaveBeenNthCalledWith(1, barAction1);
   });
+});
+
+describe("mapMany", () => {
+  let api: MiddlewareAPI<Dispatch<AnyAction>, {}>;
+  let next: Dispatch<AnyAction>;
+
+  beforeEach(() => {
+    api = {
+      dispatch: jest.fn(),
+      getState: jest.fn()
+    };
+    next = jest.fn();
+  });
 
   it("should map many", () => {
-    const actionHandler = map<FooAction, BarAction>({
+    const actionHandler = mapMany<FooAction, BarAction>({
       inputType: "Foo",
       outputType: "Bar",
-      mapMany: (foo) => [42, 43]
+      map: (foo) => [42, 43]
     })(api)(next);
     actionHandler(fooAction);
 
@@ -61,24 +74,52 @@ describe("map", () => {
     expect(api.dispatch).toHaveBeenNthCalledWith(1, barAction1);
     expect(api.dispatch).toHaveBeenNthCalledWith(2, barAction2);
   });
+});
+
+
+describe("flatMap", () => {
+  let api: MiddlewareAPI<Dispatch<AnyAction>, {}>;
+  let next: Dispatch<AnyAction>;
+
+  beforeEach(() => {
+    api = {
+      dispatch: jest.fn(),
+      getState: jest.fn()
+    };
+    next = jest.fn();
+  });
 
   it("should flatMap", () => {
-    const actionHandler = map<FooAction, BarAction>({
+    const actionHandler = flatMap<FooAction, BarAction>({
       inputType: "Foo",
       outputType: "Bar",
-      flatMap: (foo) => barAction1
+      map: (foo) => barAction1
     })(api)(next);
     actionHandler(fooAction);
 
     expect(api.dispatch).toHaveBeenCalledTimes(1);
     expect(api.dispatch).toHaveBeenNthCalledWith(1, barAction1);
   });
+});
+
+
+describe("flatMapMany", () => {
+  let api: MiddlewareAPI<Dispatch<AnyAction>, {}>;
+  let next: Dispatch<AnyAction>;
+
+  beforeEach(() => {
+    api = {
+      dispatch: jest.fn(),
+      getState: jest.fn()
+    };
+    next = jest.fn();
+  });
 
   it("should flatMap many", () => {
-    const actionHandler = map<FooAction, BarAction>({
+    const actionHandler = flatMapMany<FooAction, BarAction>({
       inputType: "Foo",
       outputType: "Bar",
-      flatMapMany: (foo) => [barAction1, barAction2]
+      map: (foo) => [barAction1, barAction2]
     })(api)(next);
     actionHandler(fooAction);
 
